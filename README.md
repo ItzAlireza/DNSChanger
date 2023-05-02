@@ -30,5 +30,11 @@ The formatting of the dns data is essential and if done wrong, will return error
 If you got any issues regarding dns data format, we will suggest you to replace your `setting.json` file with the default one in the repository
 
 ## Release
-For usage please download the latest release version from:
-- `https://github.com/ItzAlireza/dnschanger/releases`
+To get the executable package please download the latest [release](https://github.com/ItzAlireza/dnschanger/releases) version.
+
+In order to use the app:
+
+- Extract ZIP file to your destination
+- Make sure there's a `setting.json` and a `icon.ico` file in the directory
+- Use the shortcut after the extraction to launch the app
+- Finally make sure app is running with administrator privileges
