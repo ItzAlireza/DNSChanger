@@ -29,6 +29,8 @@ The formatting of the dns data is essential and if done wrong, will return error
 ## Issues
 If you got any issues regarding dns data format, we will suggest you to replace your `setting.json` file with the default one in the repository
 
+If you have any other issues regarding either the repository version or the release version, feel free to create an issue!
+
 ## Release
 To get the executable package please download the latest [release](https://github.com/ItzAlireza/dnschanger/releases) version.
 
