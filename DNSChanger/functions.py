@@ -30,7 +30,7 @@ def adminCheck():#Checking if user is using Administrator or not
         ttk.messagebox.showerror(title='Error', message='Please run the app as administrator!')
         sys.exit()
 
-def getInterface():#Getting Connected network adapter
+def NIGathering():#Getting Connected network adapter
     list = []
     final = []
     r = subprocess.check_output('netsh interface show interface')
@@ -40,14 +40,12 @@ def getInterface():#Getting Connected network adapter
     for item in r1:
         list.append(item.split('   '))
     for item in list:
-        if len(item) < 2:
-            continue 
+
         #Checking for connected interface
-        #if item[2][2:] == "Connected" and item[0] == "Enabled":
-        if item[0] == "Enabled":
-            final.append(item[-1].replace('\\r','')[2:])
+        if item[2][2:] == "Connected":
+
             #returning the name of the connected interface
-    return final
+            return item[6].replace('\\r','')[2:]
         
 def getConnectedDns(interface):#For getting the connected dns
     r = subprocess.check_output('netsh interface ip show config "'+interface+'"')
@@ -55,20 +53,11 @@ def getConnectedDns(interface):#For getting the connected dns
     for i in r:
         #finding the line of dns's
         if i[:38] == '    Statically Configured DNS Servers:':
+
             #Returning the primary and secondary dns's
             #List index to find dynamic dns ip's
             connectedDns = [r[r.index(i)].replace(' ','')[r[r.index(i)].replace(' ','').index(':')+1:-2],r[r.index(i)+1].replace(' ','')[:-2]]
-            #Checking for 'Registerwithwhichsuffix:Primaryonly' bug
-            if connectedDns[1] == 'Registerwithwhichsuffix:Primaryonly':
-                ttk.messagebox.showinfo(title='Info', message='No secondary dns detected in '+interface+'\'s setting!\n'+interface+'\'s Dns will be set to automatic!')
-                setDns(interface,'Automatic')
-                return 'Automatic','Automatic'
-            try:
-                return connectedDns,list(dns.keys())[list(dns.values()).index(connectedDns)]
-            except:
-                ttk.messagebox.showwarning(title='Info', message='The '+connectedDns[0]+' and '+connectedDns[1]+' dns was not found in setting.json file!\n'+interface+'\'s Dns will be set to automatic!\nIf that was intended, please add your dns to setting.json file!')
-                setDns(interface,'Automatic')
-                return 'Automatic','Automatic'
+            return connectedDns,list(dns.keys())[list(dns.values()).index(connectedDns)]
         elif i[:40] == '    DNS servers configured through DHCP:':
             return 'Automatic','Automatic'
 
@@ -83,13 +72,25 @@ def setDns(i,d):#For setting the dns
             os.system('netsh interface ip set dns name="'+i+'" static '+d[0])
             os.system('netsh interface ip add dns name="'+i+'" '+d[1]+' index=2')
         else:
-            ttk.messagebox.showerror(title='Data entry Error', message='The dns data is wrong! Please check setting.json formatting guide!')
+            ttk.messagebox.showerror(title='Data entry Error', message='The dns data is wrong! Please check dnslist formatting guide!')
             return False
     else:
-        ttk.messagebox.showerror(title='Data entry Error', message='The dns data is wrong! Please check setting.json formatting guide!')
+        ttk.messagebox.showerror(title='Data entry Error', message='The dns data is wrong! Please check dnslist formatting guide!')
         return False
+    
+def buttonPressed(d,i):#Handling BtnPressed from DNSChanger.py 
+    a = setDns(i,d) #Returns False if ip's are wrong
+    if a == 0:
+        return 0
 
-def colorModeInvert(a):
+def changePositions(a,b,colorMode):#Changes positions of active button and clicked button
+    br = b.grid_info()['row']
+    b.grid(row=2)
+    a.grid(row=br)
+    a.configure(fg_color=colors[colorMode]['activeButtonbg'],text_color=colors[colorMode]['activeText'],state='normal')
+    b.configure(fg_color=colors[colorMode]['deactiveButtonbg'],text_color=colors[colorMode]['deactiveText'],state='disabled')
+
+def colorModeInverse(a):
     if a == 'dark':
         return 'light'
     if a == 'light':
